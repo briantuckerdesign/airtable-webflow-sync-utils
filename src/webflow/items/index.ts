@@ -3,6 +3,7 @@ import { createItems } from "./create";
 import { updateItems } from "./update";
 import { publishItems } from "./publish";
 import { deleteItems } from "./delete";
+import { getItems } from "./get";
 
 /**
  * This is a wrapper for the Webflow API that allows you to interact with items in a collection.
@@ -12,6 +13,7 @@ import { deleteItems } from "./delete";
  */
 export const webflowItems = {
   list: listItems,
+  get: getItems,
   create: createItems,
   update: updateItems,
   publish: publishItems,

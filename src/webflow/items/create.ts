@@ -1,23 +1,25 @@
 import { Webflow, WebflowClient } from "webflow-api";
 
-export async function updateItems(
-  client: WebflowClient,
+export async function createItems(
+  accessToken: string,
   collectionId: string,
-  items: Array<Webflow.CollectionItemWithIdInput>
+  items: Array<Webflow.CollectionItem>
 ): Promise<Webflow.CollectionItem[]> {
-  const BATCH_SIZE = 100;
+  const webflow = new WebflowClient({ accessToken });
+
   const results: Webflow.CollectionItem[] = [];
 
-  for (let i = 0; i < items.length; i += BATCH_SIZE) {
-    const batch = items.slice(i, i + BATCH_SIZE);
+  for (let i = 0; i < items.length; i += 100) {
+    const batch = items.slice(i, i + 100);
 
     try {
-      const response = await client.collections.items.updateItemsLive(
+      // this returns the correct object with items prop/array inside
+      const response = (await webflow.collections.items.createItem(
         collectionId,
         {
           items: batch,
         }
-      );
+      )) as { items?: Webflow.CollectionItem[] };
 
       if (response?.items) {
         results.push(...response.items);

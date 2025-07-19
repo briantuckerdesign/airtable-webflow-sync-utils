@@ -1,18 +1,20 @@
 import { Webflow, WebflowClient } from "webflow-api";
 
 export async function listItems(
-  client: WebflowClient,
+  accessToken: string,
   collectionId: string
 ): Promise<Webflow.CollectionItem[]> {
-  const LIMIT = 100;
+  const webflow = new WebflowClient({ accessToken });
+
   const results: Webflow.CollectionItem[] = [];
+
   let offset = 0;
   let hasMore = true;
 
   while (hasMore) {
     try {
-      const response = await client.collections.items.listItems(collectionId, {
-        limit: LIMIT,
+      const response = await webflow.collections.items.listItems(collectionId, {
+        limit: 100,
         offset: offset,
       });
 
@@ -21,9 +23,14 @@ export async function listItems(
       }
 
       const pagination = response?.pagination;
-      if (pagination && pagination.offset !== undefined && pagination.limit !== undefined && pagination.total !== undefined) {
-        hasMore = (pagination.offset + pagination.limit) < pagination.total;
-        offset += LIMIT;
+      if (
+        pagination &&
+        pagination.offset !== undefined &&
+        pagination.limit !== undefined &&
+        pagination.total !== undefined
+      ) {
+        hasMore = pagination.offset + pagination.limit < pagination.total;
+        offset += 100;
       } else {
         hasMore = false;
       }
